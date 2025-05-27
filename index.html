@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chef Runner</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Tela Inicial -->
+    <div id="start-screen" class="screen">
+        <h1>Chef Runner</h1>
+        <p>Desvie dos obstáculos e colete power-ups!</p>
+        <div class="controls-info">
+            <p>Cozinheiro maluco em busca da receita suprema.</p>
+        </div>
+        <div class="buttons-container">
+            <button id="start-button">Iniciar Jogo</button>
+            <button id="info-button">Informações do Jogo</button>
+        </div>
+    </div>
+    
+    <!-- Informações do Jogo -->
+    <div id="info-screen" class="screen hidden">
+        <h2>Informações do Jogo</h2>
+        
+        <div class="info-container">
+            <div class="info-section">
+                <h3>Power-ups</h3>
+                <div class="info-items">
+                    <div class="info-item">
+                        <div class="info-icon"><img src="images/Pimenta.png" alt="Pimenta Explosiva" class="info-image"></div>
+                        <div class="info-details">
+                            <h4>Pimenta Explosiva</h4>
+                            <p>Explode todos os obstáculos próximos quando coletada.</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">🌭</div>
+                        <div class="info-details">
+                            <h4>Carne da Imunidade</h4>
+                            <p>Torna o chef imune a danos por um curto período de tempo.</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">🍲</div>
+                        <div class="info-details">
+                            <h4>Panela Mágica</h4>
+                            <p>Aumenta o tamanho do chef, permitindo que ele esmague obstáculos.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-section">
+                <h3>Obstáculos</h3>
+                <div class="info-items">
+                    <div class="info-item">
+                        <div class="info-icon">🍳</div>
+                        <div class="info-details">
+                            <h4>Facão Voador</h4>
+                            <p>Move-se para cima e para baixo no ar. Desvie pulando..</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon"><img src="images/tomate.png" alt="Tomate" class="info-image"></div>
+                        <div class="info-details">
+                            <h4>Tomate</h4>
+                            <p>Cai do céu em posições aleatórias. Mova-se para os lados para evitar.</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon"><img src="images/Pimenta.png" alt="Pimenta" class="info-image"></div>
+                        <div class="info-details">
+                            <h4>Pimenta</h4>
+                            <p>Cai girando do céu. Mais rápida que o tomate.</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon"><img src="images/ovo.png" alt="Ovo" class="info-image"></div>
+                        <div class="info-details">
+                            <h4>Ovo</h4>
+                            <p>Cai em movimento de zigue-zague, difícil de prever.</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon"><img src="images/fogao.png" alt="Fogão" class="info-image"></div>
+                        <div class="info-details">
+                            <h4>Fogão</h4>
+                            <p>Obstáculo grande no chão. Pule para evitar.</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">💧</div>
+                        <div class="info-details">
+                            <h4>Molho Escorregadio</h4>
+                            <p>Faz o chef escorregar e perder o controle temporariamente.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <button id="back-button">Voltar</button>
+    </div>
+    
+    <!-- Tela do Jogo -->
+    <div id="game-screen" class="screen hidden">
+        <canvas id="game-canvas"></canvas>
+        
+        <!-- Interface do Jogo -->
+        <div id="game-ui">
+            <div id="score-container">
+                <span>Pontuação: </span>
+                <span id="score">0</span>
+            </div>
+            
+            <!-- Indicadores de Power-ups -->
+            <div id="powerups-container">
+                <div id="chilli-explosion" class="powerup-indicator">
+                    <span class="powerup-icon"><img src="images/Pimenta.png" alt="Pimenta Explosiva" class="powerup-image"></span>
+                    <div class="powerup-timer"></div>
+                </div>
+                <div id="steel-meat" class="powerup-indicator">
+                    <span class="powerup-icon"><img src="images/facão.png" alt="Carne de Aço" class="powerup-image"></span>
+                    <div class="powerup-timer"></div>
+                </div>
+                <div id="magic-pot" class="powerup-indicator">
+                    <span class="powerup-icon">🍲</span>
+                    <div class="powerup-timer"></div>
+                </div>
+            </div>
+            
+            <!-- Botão de informações durante o jogo -->
+        </div>
+        
+        <div id="in-game-info-button">ℹ️</div>
+        
+        <!-- Controles para dispositivos móveis -->
+        <div id="mobile-controls">
+            <div id="left-control"></div>
+            <div id="jump-control"></div>
+            <div id="right-control"></div>
+        </div>
+    </div>
+    
+    <!-- Tela de Fim de Jogo -->
+    <div id="game-over-screen" class="screen hidden">
+        <h2>Fim de Jogo</h2>
+        <div id="final-score-container">
+            <p>Sua pontuação: <span id="final-score">0</span></p>
+            <p>Recorde: <span id="high-score">0</span></p>
+        </div>
+        <div class="buttons-container">
+            <button id="restart-button">Jogar Novamente</button>
+            <button id="game-over-info-button">Informações do Jogo</button>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
