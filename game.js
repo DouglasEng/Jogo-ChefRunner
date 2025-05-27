@@ -46,7 +46,7 @@ imagemFaca.src = 'images/facão.png';
 const imagemParede = new Image();
 imagemParede.src = 'images/parede-tijolo.png';
 
-// configurações do jogo
+// configuraçães do jogo
 let larguraJogo, alturaJogo, nivelChao;
 let pontuacao = 0;
 let recorde = localStorage.getItem('highScore') || 0;
@@ -65,6 +65,8 @@ let teclaDireitaPressionada = false;
 let jogoPausado = false;
 let alturaPiso = 200; 
 let fatorEscala = 1.3;
+let deslocamentoParede = 0;
+let deslocamentoPiso = 0;
 
 const framesJogador = [];
 const totalFrames = 8;
@@ -849,14 +851,36 @@ function limparObjetosInativos() {
 }
 
 function drawBackground() {
-
-    // Parede de tijolos
     const brickPattern = ctx.createPattern(imagemParede, 'repeat');
     ctx.fillStyle = brickPattern;
-    ctx.fillRect(0, 0, larguraJogo, nivelChao - 100);
-    // Chão
-    for (let x = 0; x < larguraJogo; x += imagemPiso.width) {
+    
+    ctx.save();
+    
+    ctx.translate(deslocamentoParede, 0);
+    ctx.fillRect(-imagemParede.width, 0, larguraJogo + imagemParede.width * 2, nivelChao - 100);
+    
+    ctx.restore();
+    
+    deslocamentoParede -= velocidadeJogo * 0.2;
+    
+    // reinicia o deslocamento para criar um loop
+    if (deslocamentoParede <= -imagemParede.width) {
+        deslocamentoParede = 0;
+    }
+    
+    ctx.save();
+    
+    ctx.translate(deslocamentoPiso, 0);
+    
+    for (let x = -imagemPiso.width; x < larguraJogo + imagemPiso.width; x += imagemPiso.width) {
         ctx.drawImage(imagemPiso, x, nivelChao - alturaPiso, imagemPiso.width, alturaPiso);
+    }
+    
+    ctx.restore();
+    
+    deslocamentoPiso -= velocidadeJogo * 0.5;
+    if (deslocamentoPiso <= -imagemPiso.width) {
+        deslocamentoPiso = 0;
     }
 }
 
@@ -953,6 +977,10 @@ function iniciarJogo() {
     powerUps = [];
     superficiesMolho = [];
     explosoes = [];
+    
+    // Reinicia os deslocamentos do fundo
+    deslocamentoParede = 0;
+    deslocamentoPiso = 0;
     
     powerUpsAtivos.chilliExplosion.deactivate();
     powerUpsAtivos.steelMeat.deactivate();
