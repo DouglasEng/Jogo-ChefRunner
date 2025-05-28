@@ -109,6 +109,7 @@ const jogador = {
     heightOriginal: 200 * fatorEscala,
     hitboxOffsetX: 10,
     hitboxOffsetY: 5,
+    tempoImunidadeGigante: 0,
 
     draw(timestamp) {
         // efeito visual
@@ -170,6 +171,12 @@ const jogador = {
         if (this.x + this.width > larguraJogo) {
             this.x = larguraJogo - this.width;
         }
+        if (this.tempoImunidadeGigante > 0) {
+            this.tempoImunidadeGigante -= deltaTime;
+            if (this.tempoImunidadeGigante <= 0) {
+                this.tempoImunidadeGigante = 0;
+            }
+        }
     },
 
     pular() {
@@ -201,12 +208,18 @@ const jogador = {
         this.width = this.widthOriginal * fatorEscala;
         this.height = this.heightOriginal * fatorEscala;
         this.gigante = true;
+        this.tempoImunidadeGigante = 50000; 
+        this.imune = true;
     },
 
     encolher() {
         this.width = this.widthOriginal;
         this.height = this.heightOriginal;
         this.gigante = false;
+        if (this.tempoImunidadeGigante > 0) {
+            this.imune = false;
+            this.tempoImunidadeGigante = 0;
+        }
     },
 
     reset() {
@@ -219,6 +232,7 @@ const jogador = {
         this.gigante = false;
         this.width = this.widthOriginal;
         this.height = this.heightOriginal;
+        this.tempoImunidadeGigante = 0;
         teclaEsquerdaPressionada = false;
         teclaDireitaPressionada = false;
     }
@@ -961,6 +975,9 @@ function atualizarJogo(timestamp) {
     drawBackground();
     
     jogador.update();
+     if (jogador.tempoImunidadeGigante <= 0 && !powerUpsAtivos.steelMeat.active) {
+        jogador.imune = false;
+    }
     jogador.draw(timestamp);
     
     temporizadorObstaculo += deltaTime;
