@@ -46,6 +46,12 @@ imagemFaca.src = 'images/facão.png';
 const imagemParede = new Image();
 imagemParede.src = 'images/parede-tijolo.png';
 
+const imagemMolhoRapido = new Image();
+imagemMolhoRapido.src = 'images/azul.png'; // imagem temporarea
+
+const imagemMolhoLento = new Image();
+imagemMolhoLento.src = 'images/tomate.png'; // imagem temporarea
+
 // configuraçães do jogo
 let larguraJogo, alturaJogo, nivelChao;
 let pontuacao = 0;
@@ -417,14 +423,22 @@ class Obstaculo {
 }
 
 class SuperficiaMolho {
-    constructor() {
+    constructor(tipo = null) {
         this.width = (100 + Math.random() * 100) * fatorEscala;
         this.height = 10 * fatorEscala;
         this.x = larguraJogo;
         this.y = nivelChao - alturaPiso/2; 
         this.velocidade = velocidadeJogo;
         this.active = true;
-        this.color = `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 100)}, 0, 0.7)`;
+        
+        // define o tipo de molho
+        this.tipo = tipo || (Math.random() < 0.5 ? 'rapido' : 'lento');
+        
+        if (this.tipo === 'rapido') {
+            this.color = 'rgba(0, 0, 255, 0.7)'; // azul para molho rápido
+        } else {
+            this.color = 'rgba(255, 0, 0, 0.7)'; // vermelho para molho lento
+        }
     }
     
     draw() {
@@ -437,6 +451,22 @@ class SuperficiaMolho {
         ctx.beginPath();
         ctx.ellipse(this.x + this.width/3, this.y + this.height/2, this.width/6, this.height/8, 0, 0, Math.PI * 2);
         ctx.fill();
+        
+        if (this.tipo === 'rapido') {
+            // setas para indicar velocidade
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.beginPath();
+            ctx.moveTo(this.x + this.width/2 - 15, this.y);
+            ctx.lineTo(this.x + this.width/2 + 15, this.y);
+            ctx.lineTo(this.x + this.width/2, this.y - 10);
+            ctx.fill();
+        } else {
+            // simbolo para indicar lentidão
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.beginPath();
+            ctx.arc(this.x + this.width/2, this.y, 5, 0, Math.PI * 2);
+            ctx.fill();
+        }
     }
     
     update() {
@@ -757,8 +787,22 @@ function gerarObstaculos() {
 }
 
 function gerarSuperficiaMolho() {
-    if (Math.random() < 0.3) {
-        superficiesMolho.push(new SuperficiaMolho());
+    const distanciaMinima = 300; 
+    
+    const temObstaculoProximo = obstaculos.some(obstaculo => 
+        obstaculo.x > larguraJogo - distanciaMinima && 
+        obstaculo.x < larguraJogo + distanciaMinima
+    );
+    
+    const temMolhoProximo = superficiesMolho.some(molho => 
+        molho.x > larguraJogo - distanciaMinima && 
+        molho.x < larguraJogo + distanciaMinima
+    );
+    
+    // gera molho se nao tiver nada perto
+    if (!temObstaculoProximo && !temMolhoProximo) {
+        const tipo = Math.random() < 0.5 ? 'rapido' : 'lento';
+        superficiesMolho.push(new SuperficiaMolho(tipo));
     }
 }
 
@@ -831,17 +875,33 @@ function verificarColisoes() {
     
     for (let superficie of superficiesMolho) {
         if (superficie.active && superficie.checkCollision(jogador)) {
-            if (jogador.velocityX === 0) {
-                // se nao tiver movendo, escorrega na direção do jogo
-                jogador.velocityX = -velocidadeJogo * 10;
+            if (superficie.tipo === 'rapido') {
+                if (jogador.velocityX === 0) {
+                    // escorre na direcao do jogo se nao tiver se movemendo
+                    jogador.velocityX = -velocidadeJogo * 29;
+                } else {
+                    // aumenta velocidade na direção onde tiver se movendo
+                    jogador.velocityX *= 29;
+                }
+                
+                if (jogador.velocityX > 30) jogador.velocityX = 30;
+                if (jogador.velocityX < -30) jogador.velocityX = -30;
+                
+                jogador.forcaPulo = -13; 
+                
+                setTimeout(() => {
+                    jogador.forcaPulo = -12; 
+                }, 2000);
             } else {
-                // se  estiver se movendo, aumenta a velocidade na direção atual
-                jogador.velocityX *= 10;
+                // Molho lento
+                jogador.velocityX = jogador.velocityX > 0 ? 0.5 : -0.5;
+                
+                jogador.forcaPulo = -9; 
+                
+                setTimeout(() => {
+                    jogador.forcaPulo = -12; //
+                }, 500);
             }
-            
-            // velocidade máxima
-            if (jogador.velocityX > 15) jogador.velocityX = 15;
-            if (jogador.velocityX < -15) jogador.velocityX = -15;
         }
     }
 }
@@ -908,7 +968,7 @@ function atualizarJogo(timestamp) {
         gerarObstaculos();
         temporizadorObstaculo = 0;
         
-        if (Math.random() < 0.3) {
+        if (Math.random() < 0.2) {
             gerarSuperficiaMolho();
         }
     }
