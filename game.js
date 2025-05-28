@@ -101,6 +101,8 @@ const jogador = {
     gigante: false,
     widthOriginal: 80 * fatorEscala,
     heightOriginal: 200 * fatorEscala,
+    hitboxOffsetX: 10,
+    hitboxOffsetY: 5,
 
     draw(timestamp) {
         // efeito visual
@@ -778,21 +780,22 @@ function verificarColisoes() {
         let colisao = false;
         
         if (obstaculo.type === 'stove') {
-            const margemX = obstaculo.width * 0.15;
-            const margemY = obstaculo.height * 0.1; 
+            // hitbox menor para fogão
+            const margemX = obstaculo.width * 0.20;         
+            const margemY = obstaculo.height * 0.2; 
             
             colisao = (
-                jogador.x < obstaculo.x + obstaculo.width - margemX &&
-                jogador.x + jogador.width > obstaculo.x + margemX &&
-                jogador.y < obstaculo.y + obstaculo.height - margemY &&
-                jogador.y + jogador.height > obstaculo.y + margemY
+                jogador.x + jogador.hitboxOffsetX < obstaculo.x + obstaculo.width - margemX &&
+                jogador.x + jogador.width - jogador.hitboxOffsetX > obstaculo.x + margemX &&
+                jogador.y + jogador.hitboxOffsetY < obstaculo.y + obstaculo.height - margemY &&
+                jogador.y + jogador.height - jogador.hitboxOffsetY > obstaculo.y + margemY
             );
         } else {
             colisao = (
-                jogador.x < obstaculo.x + obstaculo.width &&
-                jogador.x + jogador.width > obstaculo.x &&
-                jogador.y < obstaculo.y + obstaculo.height &&
-                jogador.y + jogador.height > obstaculo.y
+                jogador.x + jogador.hitboxOffsetX < obstaculo.x + obstaculo.width &&
+                jogador.x + jogador.width - jogador.hitboxOffsetX > obstaculo.x &&
+                jogador.y + jogador.hitboxOffsetY < obstaculo.y + obstaculo.height &&
+                jogador.y + jogador.height - jogador.hitboxOffsetY > obstaculo.y
             );
         }
         
@@ -977,11 +980,8 @@ function iniciarJogo() {
     powerUps = [];
     superficiesMolho = [];
     explosoes = [];
-    
-    // Reinicia os deslocamentos do fundo
     deslocamentoParede = 0;
     deslocamentoPiso = 0;
-    
     powerUpsAtivos.chilliExplosion.deactivate();
     powerUpsAtivos.steelMeat.deactivate();
     powerUpsAtivos.magicPot.deactivate();
