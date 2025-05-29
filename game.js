@@ -208,7 +208,7 @@ const jogador = {
         this.width = this.widthOriginal * fatorEscala;
         this.height = this.heightOriginal * fatorEscala;
         this.gigante = true;
-        this.tempoImunidadeGigante = 50000; 
+        this.tempoImunidadeGigante = 500; 
         this.imune = true;
     },
 
@@ -511,7 +511,7 @@ class PowerUp {
         this.width = 30 * fatorEscala;
         this.height = 30 * fatorEscala;
         this.x = larguraJogo;
-        this.y = nivelChao - alturaPiso/2 - this.height - 50 - Math.random() * 150; 
+        this.y = nivelChao - alturaPiso/2 - this.height - 150 - Math.random() * 150; 
         this.velocidade = velocidadeJogo;
         this.active = true;
         this.floatOffset = 0;
@@ -726,7 +726,7 @@ const powerUpsAtivos = {
     magicPot: {
         active: false,
         duration: 0,
-        maxDuration: 6000, 
+        maxDuration: 10000, 
         activate() {
             this.active = true;
             this.duration = this.maxDuration;
@@ -748,6 +748,9 @@ const powerUpsAtivos = {
         deactivate() {
             this.active = false;
             jogador.encolher();
+            if (powerUpsAtivos.steelMeat.active) {
+                jogador.imune = true;
+            }
             magicPotIndicator.classList.remove('active');
             magicPotIndicator.querySelector('.powerup-timer').style.transform = 'scaleX(0)';
         }
