@@ -20,11 +20,22 @@ const controlePulo = document.getElementById('jump-control');
 const controleDireita = document.getElementById('right-control');
 
 // powerups
-const indicadorPimentaExplosiva = document.getElementById('chilli-explosion');
-const indicadorCarneAco = document.getElementById('steel-meat');
-const magicPotIndicator = document.getElementById('magic-pot');
+const indicadorMel = document.getElementById('honey');
+const indicadorHotDog = document.getElementById('hotdog');
+const indicadorHamburguer = document.getElementById('hamburguer');
+
 
 // imagens
+
+const ImagemMel = new Image()
+ImagemMel.src = 'images/mel.png'
+
+const imagemHotDog = new Image()
+imagemHotDog.src = 'images/HotDog.png'
+
+const imagemHamburguer = new Image()
+imagemHamburguer.src = 'images/hamburguer.png'
+
 const imagemPiso = new Image();
 imagemPiso.src = 'images/piso.png';
 
@@ -52,7 +63,7 @@ imagemMolhoRapido.src = 'images/azul.png'; // imagem temporarea
 const imagemMolhoLento = new Image();
 imagemMolhoLento.src = 'images/tomate.png'; // imagem temporarea
 
-// configuraçães do jogo
+// configuraçãos do jogo
 let larguraJogo, alturaJogo, nivelChao;
 let pontuacao = 0;
 let recorde = localStorage.getItem('highScore') || 0;
@@ -522,13 +533,13 @@ class PowerUp {
         
         // Ajustes específicos por tipo
         switch(tipo) {
-            case 'chilliExplosion':
+            case 'honey':
                 this.color = '#ff4500';
                 break;
-            case 'steelMeat':
+            case 'hotdog':
                 this.color = '#cd853f';
                 break;
-            case 'magicPot':
+            case 'hamburguer':
                 this.color = '#9932cc';
                 break;
         }
@@ -547,32 +558,16 @@ class PowerUp {
         ctx.shadowBlur = 10;
         
         switch(this.type) {
-            case 'chilliExplosion':
-                ctx.drawImage(ImagemPimenta, this.x, this.y, this.width, this.height);
+            case 'honey':
+                ctx.drawImage(ImagemMel, this.x, this.y, this.width, this.height);
                 break;
                 
-            case 'steelMeat':
-                ctx.drawImage(imagemFaca, this.x, this.y, this.width, this.height);
+            case 'hotdog':
+                ctx.drawImage(imagemHotDog, this.x, this.y, this.width, this.height);
                 break;
                 
-            case 'magicPot':
-                ctx.fillStyle = '#9932cc';
-                ctx.beginPath();
-                ctx.arc(this.x + this.width/2, this.y + this.height/2, this.width/2, 0, Math.PI * 2);
-                ctx.fill();
-                
-                ctx.strokeStyle = '#dda0dd';
-                ctx.lineWidth = 3;
-                ctx.beginPath();
-                ctx.arc(this.x + this.width/2, this.y + this.height/2, this.width/2 + 5, Math.PI * 0.8, Math.PI * 2.2);
-                ctx.stroke();
-                
-                ctx.fillStyle = '#ffffff';
-                ctx.globalAlpha = 0.6;
-                ctx.beginPath();
-                ctx.arc(this.x + this.width/2, this.y + this.height/3, this.width/6, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.globalAlpha = 1;
+            case 'hamburguer':
+                ctx.drawImage(imagemHamburguer, this.x, this.y, this.width, this.height);
                 break;
         }
         
@@ -661,14 +656,14 @@ class Explosion {
 }
 
 const powerUpsAtivos = {
-    chilliExplosion: {
+    honey: {
         active: false,
         duracao: 0,
         duracaoMaxima: 5000,
         activate() {
             this.active = true;
             this.duracao = this.duracaoMaxima;
-            indicadorPimentaExplosiva.classList.add('active');
+            indicadorMel.classList.add('active');
             
             try {
                 createExplosion(jogador.x + jogador.width/2, jogador.y + jogador.height/2);
@@ -681,7 +676,7 @@ const powerUpsAtivos = {
                 this.duracao -= deltaTime;
                 
                 const progress = this.duracao / this.duracaoMaxima;
-                indicadorPimentaExplosiva.querySelector('.powerup-timer').style.transform = `scaleX(${progress})`;
+                indicadorMel.querySelector('.powerup-timer').style.transform = `scaleX(${progress})`;
                 
                 if (this.duracao <= 0) {
                     this.deactivate();
@@ -690,11 +685,11 @@ const powerUpsAtivos = {
         },
         deactivate() {
             this.active = false;
-            indicadorPimentaExplosiva.classList.remove('active');
-            indicadorPimentaExplosiva.querySelector('.powerup-timer').style.transform = 'scaleX(0)';
+            indicadorMel.classList.remove('active');
+            indicadorMel.querySelector('.powerup-timer').style.transform = 'scaleX(0)';
         }
     },
-    steelMeat: {
+    hotdog: {
         active: false,
         duration: 0,
         maxDuration: 8000, 
@@ -702,14 +697,14 @@ const powerUpsAtivos = {
             this.active = true;
             this.duration = this.maxDuration;
             jogador.imune = true;
-            indicadorCarneAco.classList.add('active');
+            indicadorHotDog.classList.add('active');
         },
         update(deltaTime) {
             if (this.active) {
                 this.duration -= deltaTime;
                 
                 const progress = this.duration / this.maxDuration;
-                indicadorCarneAco.querySelector('.powerup-timer').style.transform = `scaleX(${progress})`;
+                indicadorHotDog.querySelector('.powerup-timer').style.transform = `scaleX(${progress})`;
                 
                 if (this.duration <= 0) {
                     this.deactivate();
@@ -719,11 +714,11 @@ const powerUpsAtivos = {
         deactivate() {
             this.active = false;
             jogador.imune = false;
-            indicadorCarneAco.classList.remove('active');
-            indicadorCarneAco.querySelector('.powerup-timer').style.transform = 'scaleX(0)';
+            indicadorHotDog.classList.remove('active');
+            indicadorHotDog.querySelector('.powerup-timer').style.transform = 'scaleX(0)';
         }
     },
-    magicPot: {
+    hamburguer: {
         active: false,
         duration: 0,
         maxDuration: 10000, 
@@ -731,14 +726,14 @@ const powerUpsAtivos = {
             this.active = true;
             this.duration = this.maxDuration;
             jogador.crescer();
-            magicPotIndicator.classList.add('active');
+            indicadorHamburguer.classList.add('active');
         },
         update(deltaTime) {
             if (this.active) {
                 this.duration -= deltaTime;
                 
                 const progress = this.duration / this.maxDuration;
-                magicPotIndicator.querySelector('.powerup-timer').style.transform = `scaleX(${progress})`;
+                indicadorHamburguer.querySelector('.powerup-timer').style.transform = `scaleX(${progress})`;
                 
                 if (this.duration <= 0) {
                     this.deactivate();
@@ -748,11 +743,11 @@ const powerUpsAtivos = {
         deactivate() {
             this.active = false;
             jogador.encolher();
-            if (powerUpsAtivos.steelMeat.active) {
+            if (powerUpsAtivos.hotdog.active) {
                 jogador.imune = true;
             }
-            magicPotIndicator.classList.remove('active');
-            magicPotIndicator.querySelector('.powerup-timer').style.transform = 'scaleX(0)';
+            indicadorHamburguer.classList.remove('active');
+            indicadorHamburguer.querySelector('.powerup-timer').style.transform = 'scaleX(0)';
         }
     }
 };
@@ -824,7 +819,7 @@ function gerarSuperficiaMolho() {
 }
 
 function gerarPowerUp() {
-    const powerUpTipos = ['chilliExplosion', 'steelMeat', 'magicPot'];
+    const powerUpTipos = ['honey', 'hotdog', 'hamburguer'];
     const tipoAleatorio = powerUpTipos[Math.floor(Math.random() * powerUpTipos.length)];
     powerUps.push(new PowerUp(tipoAleatorio));
 }
@@ -978,7 +973,7 @@ function atualizarJogo(timestamp) {
     drawBackground();
     
     jogador.update();
-     if (jogador.tempoImunidadeGigante <= 0 && !powerUpsAtivos.steelMeat.active) {
+     if (jogador.tempoImunidadeGigante <= 0 && !powerUpsAtivos.hotdog.active) {
         jogador.imune = false;
     }
     jogador.draw(timestamp);
@@ -1034,9 +1029,9 @@ function atualizarJogo(timestamp) {
         explosion.draw();
     }
     
-    powerUpsAtivos.chilliExplosion.update(deltaTime);
-    powerUpsAtivos.steelMeat.update(deltaTime);
-    powerUpsAtivos.magicPot.update(deltaTime);
+    powerUpsAtivos.honey.update(deltaTime);
+    powerUpsAtivos.hotdog.update(deltaTime);
+    powerUpsAtivos.hamburguer.update(deltaTime);
     
     verificarColisoes();
     
@@ -1062,9 +1057,9 @@ function iniciarJogo() {
     explosoes = [];
     deslocamentoParede = 0;
     deslocamentoPiso = 0;
-    powerUpsAtivos.chilliExplosion.deactivate();
-    powerUpsAtivos.steelMeat.deactivate();
-    powerUpsAtivos.magicPot.deactivate();
+    powerUpsAtivos.honey.deactivate();
+    powerUpsAtivos.hotdog.deactivate();
+    powerUpsAtivos.hamburguer.deactivate();
     
     jogador.reset();
 
