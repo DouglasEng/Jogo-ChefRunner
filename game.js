@@ -24,7 +24,6 @@ const indicadorMel = document.getElementById('honey');
 const indicadorHotDog = document.getElementById('hotdog');
 const indicadorHamburguer = document.getElementById('hamburguer');
 
-
 // imagens
 
 const ImagemMel = new Image()
@@ -251,8 +250,7 @@ const jogador = {
 
 let obstaculos = [];
 let powerUps = [];
-let superficiesMolho = [];
-let explosoes = [];
+let slides = [];
 let ultimaTeclaPressionada = null;
 
 class Obstaculo {
@@ -280,15 +278,6 @@ class Obstaculo {
                 this.x = Math.random() * (larguraJogo - this.width);
                 this.velocidade = 0;
                 this.velocidadeQueda = 3 + Math.random() * 3;
-                break;
-                
-            case 'pepper':
-                this.y = -this.height;
-                this.x = Math.random() * (larguraJogo - this.width);
-                this.velocidade = 0;
-                this.velocidadeQueda = 4 + Math.random() * 4;
-                this.anguloRotacao = 0;
-                this.velocidadeRotacao = 0.05 + Math.random() * 0.1;
                 break;
                 
             case 'egg':
@@ -327,15 +316,6 @@ class Obstaculo {
                 ctx.drawImage(imagemTomate, this.x, this.y, this.width, this.height);
                 break;
                 
-            case 'pepper':
-                // Rotaciona a pimenta
-                ctx.translate(this.x + this.width/2, this.y + this.height/2);
-                ctx.rotate(this.anguloRotacao);
-                ctx.translate(-(this.x + this.width/2), -(this.y + this.height/2));
-                
-                ctx.drawImage(ImagemPimenta, this.x, this.y, this.width, this.height);
-                break;
-                
             case 'egg':
                 ctx.drawImage(imagemOvo, this.x, this.y, this.width, this.height);
                 break;
@@ -372,15 +352,6 @@ class Obstaculo {
                 
             case 'tomato':
                 this.y += this.velocidadeQueda;
-                
-                if (this.y > alturaJogo) {
-                    this.active = false;
-                }
-                break;
-                
-            case 'pepper':
-                this.y += this.velocidadeQueda;
-                this.anguloRotacao += this.velocidadeRotacao;
                 
                 if (this.y > alturaJogo) {
                     this.active = false;
@@ -519,8 +490,8 @@ class SuperficiaMolho {
 class PowerUp {
     constructor(tipo) {
         this.type = tipo;
-        this.width = 30 * fatorEscala;
-        this.height = 30 * fatorEscala;
+        this.width = 50 * fatorEscala;
+        this.height = 50 * fatorEscala;
         this.x = larguraJogo;
         this.y = nivelChao - alturaPiso/2 - this.height - 150 - Math.random() * 150; 
         this.velocidade = velocidadeJogo;
@@ -603,77 +574,33 @@ class PowerUp {
     }
 }
 
-class Explosion {
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
-        this.radius = 5 * fatorEscala;
-        this.maxRadius = 40 * fatorEscala;
-        this.speed = 2;
-        this.active = true;
-        this.alpha = 1;
-    }
-    
-    draw() {
-        ctx.save();
-        ctx.globalAlpha = this.alpha;
-        
-        // Círculo externo
-        ctx.fillStyle = '#ff4500';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fill();
-        
-        // Círculo interno 
-        ctx.fillStyle = '#ffff00';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius * 0.6, 0, Math.PI * 2);
-        ctx.fill();
-        
-        ctx.restore();
-    }
-    
-    update() {
-        this.radius += this.speed;
-        this.alpha -= 0.02;
-        
-        if (this.radius >= this.maxRadius || this.alpha <= 0) {
-            this.active = false;
-        }
-    }
-    
-    checkCollision(obstacle) {
-        // Verificar se a explosão atinge um obstáculo
-        const dx = obstacle.x + obstacle.width/2 - this.x;
-        const dy = obstacle.y + obstacle.height/2 - this.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        
-        if (distance < this.radius + Math.max(obstacle.width, obstacle.height)/2) {
-            return true;
-        }
-        return false;
-    }
-}
-
 const powerUpsAtivos = {
     honey: {
         active: false,
         duracao: 0,
         duracaoMaxima: 5000,
+        velocidadeOriginal: 0,
         activate() {
             this.active = true;
             this.duracao = this.duracaoMaxima;
             indicadorMel.classList.add('active');
             
-            try {
-                createExplosion(jogador.x + jogador.width/2, jogador.y + jogador.height/2);
-            } catch (error) {
-                console.error("Erro ao criar explosão:", error);
+            // guarda velocidade original do jogo
+            this.velocidadeOriginal = velocidadeJogo;
+            
+            // reduz a velocidade dos obstáculos
+            for (let obstaculo of obstaculos) {
+                obstaculo.velocidade = obstaculo.velocidade * 0.5;
             }
         },
         update(deltaTime) {
             if (this.active) {
                 this.duracao -= deltaTime;
+                
+                // deixa obstaculos lentos quando pworup estiver ativo
+                for (let obstaculo of obstaculos) {
+                    obstaculo.velocidade = this.velocidadeOriginal * 0.5;
+                }
                 
                 const progress = this.duracao / this.duracaoMaxima;
                 indicadorMel.querySelector('.powerup-timer').style.transform = `scaleX(${progress})`;
@@ -685,10 +612,17 @@ const powerUpsAtivos = {
         },
         deactivate() {
             this.active = false;
+            
+            // devolve a velocidade normal dos obstáculos
+            for (let obstaculo of obstaculos) {
+                obstaculo.velocidade = velocidadeJogo;
+            }
+            
             indicadorMel.classList.remove('active');
             indicadorMel.querySelector('.powerup-timer').style.transform = 'scaleX(0)';
         }
     },
+    
     hotdog: {
         active: false,
         duration: 0,
@@ -718,6 +652,7 @@ const powerUpsAtivos = {
             indicadorHotDog.querySelector('.powerup-timer').style.transform = 'scaleX(0)';
         }
     },
+    
     hamburguer: {
         active: false,
         duration: 0,
@@ -753,10 +688,6 @@ const powerUpsAtivos = {
 };
 
 
-function createExplosion(x, y) {
-    explosoes.push(new Explosion(x, y));
-}
-
 function redimensionarCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -773,14 +704,13 @@ function redimensionarCanvas() {
 }
 
 function gerarObstaculos() {
-    const tiposObstaculos = ['flyingPan', 'tomato', 'pepper', 'egg', 'stove'];
+    const tiposObstaculos = ['flyingPan', 'tomato', 'egg', 'stove'];
     
     const probabilidades = {
-        'flyingPan': 0.10,
-        'tomato': 0.10,
-        'pepper': 0.10,
-        'egg': 0.10,
-        'stove': 0.60  
+        'flyingPan': 0.15,
+        'tomato': 0.15,
+        'egg': 0.15,
+        'stove': 0.55  
     };
     
     const random = Math.random();
@@ -806,15 +736,15 @@ function gerarSuperficiaMolho() {
         obstaculo.x < larguraJogo + distanciaMinima
     );
     
-    const temMolhoProximo = superficiesMolho.some(molho => 
-        molho.x > larguraJogo - distanciaMinima && 
-        molho.x < larguraJogo + distanciaMinima
+    const temMolhoProximo = slides.some(slide => 
+        slide.x > larguraJogo - distanciaMinima && 
+        slide.x < larguraJogo + distanciaMinima
     );
     
     // gera molho se nao tiver nada perto
     if (!temObstaculoProximo && !temMolhoProximo) {
         const tipo = Math.random() < 0.5 ? 'rapido' : 'lento';
-        superficiesMolho.push(new SuperficiaMolho(tipo));
+        slides.push(new SuperficiaMolho(tipo));
     }
 }
 
@@ -885,9 +815,9 @@ function verificarColisoes() {
         }
     }
     
-    for (let superficie of superficiesMolho) {
-        if (superficie.active && superficie.checkCollision(jogador)) {
-            if (superficie.tipo === 'rapido') {
+    for (let slide of slides) {
+        if (slide.active && slide.checkCollision(jogador)) {
+            if (slide.tipo === 'rapido') {
                 if (jogador.velocityX === 0) {
                     // escorre na direcao do jogo se nao tiver se movemendo
                     jogador.velocityX = -velocidadeJogo * 29;
@@ -921,8 +851,7 @@ function verificarColisoes() {
 function limparObjetosInativos() {
     obstaculos = obstaculos.filter(obstacle => obstacle.active);
     powerUps = powerUps.filter(powerUp => powerUp.active);
-    superficiesMolho = superficiesMolho.filter(slide => slide.active);
-    explosoes = explosoes.filter(explosion => explosion.active);
+    slides = slides.filter(slide => slide.active);
 }
 
 function drawBackground() {
@@ -1019,14 +948,9 @@ function atualizarJogo(timestamp) {
         powerUp.draw();
     }
     
-    for (let slide of superficiesMolho) {
+    for (let slide of slides) {
         slide.update();
         slide.draw();
-    }
-    
-    for (let explosion of explosoes) {
-        explosion.update();
-        explosion.draw();
     }
     
     powerUpsAtivos.honey.update(deltaTime);
@@ -1053,8 +977,7 @@ function iniciarJogo() {
     
     obstaculos = [];
     powerUps = [];
-    superficiesMolho = [];
-    explosoes = [];
+    slides = [];
     deslocamentoParede = 0;
     deslocamentoPiso = 0;
     powerUpsAtivos.honey.deactivate();
