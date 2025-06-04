@@ -548,7 +548,7 @@ class PowerUp {
     update() {
         this.x -= this.velocidade;
         
-        // Efeito de flutuação
+        // Efeito de flutuacao
         this.floatOffset += this.floatSpeed;
         this.y += Math.sin(this.floatOffset) * 0.5;
         
@@ -908,7 +908,14 @@ function atualizarJogo(timestamp) {
     jogador.draw(timestamp);
     
     temporizadorObstaculo += deltaTime;
-    if (temporizadorObstaculo > 1500 - velocidadeJogo * 50) {
+    
+
+    let intervaloObstaculo = 1500 - velocidadeJogo * 50;
+    if (powerUpsAtivos.honey.active) {
+        intervaloObstaculo = 4000; 
+    }
+    
+    if (temporizadorObstaculo > intervaloObstaculo) {
         gerarObstaculos();
         temporizadorObstaculo = 0;
         
