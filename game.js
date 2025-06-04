@@ -356,7 +356,7 @@ class Obstaculo {
                 if (this.y > alturaJogo) {
                     this.active = false;
                 }
-                break;
+                break; 
                 
             case 'egg':
                 this.y += this.velocidadeQueda;
