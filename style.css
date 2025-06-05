@@ -308,10 +308,14 @@ button:hover {
 
 /* Fim de jogo */
 #game-over-screen h2 {
-    margin-top: 8rem;
+    margin-top: 15rem;
     font-size: 2.5rem;
     color: #ff6b6b;
     margin-bottom: 20px;
+}
+
+#game-over-screen .controls-info{
+    margin-top: 7rem;
 }
 #final-score-container {
     font-size: 1.3rem;
