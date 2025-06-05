@@ -36,12 +36,41 @@ html, body {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 .controls-info {
-    margin: 20px 0;
-    padding: 15px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    max-width: 80%;
+  margin: 20px 0;
+  padding: 15px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  max-width: 80%;
+  text-align: center;
 }
+
+.how-to-play {
+  margin-top: 15px;
+  background-color: rgba(255, 255, 255, 0.08);
+  padding: 10px 15px;
+  border-radius: 8px;
+}
+
+.how-to-play h3 {
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+  color: #ffffff;
+  text-shadow: 1px 1px 2px black;
+}
+
+.how-to-play ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.how-to-play li {
+  font-size: 1rem;
+  margin: 5px 0;
+  color: #fff;
+  text-shadow: 1px 1px 2px #000;
+}
+
 .controls-info p {
     margin: 8px 0;
 }
@@ -279,6 +308,7 @@ button:hover {
 
 /* Fim de jogo */
 #game-over-screen h2 {
+    margin-top: 8rem;
     font-size: 2.5rem;
     color: #ff6b6b;
     margin-bottom: 20px;

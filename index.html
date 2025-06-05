@@ -1,29 +1,42 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Chef Runner</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <!-- Tela Inicial -->
     <div id="start-screen" class="screen">
         <h1>Chef Runner</h1>
         <p>Desvie dos obstáculos e colete power-ups!</p>
+
         <div class="controls-info">
-            <p>Cozinheiro maluco em busca da receita suprema.</p>
+            <p><strong>Cozinheiro maluco</strong> em busca da receita suprema!</p>
+
+            <div class="how-to-play">
+                <h3>Como jogar:</h3>
+                <ul>
+                    <li>⬅️ ➡️ Use as setas para se mover</li>
+                    <li>⬆️ + ➡️ Pule obstáculos com seta para cima + direita</li>
+                </ul>
+            </div>
         </div>
+
         <div class="buttons-container">
             <button id="start-button">Iniciar Jogo</button>
             <button id="info-button">Informações do Jogo</button>
         </div>
     </div>
-    
+
+
     <!-- Informações do Jogo -->
     <div id="info-screen" class="screen hidden">
         <h2>Informações do Jogo</h2>
-        
+
         <div class="info-container">
             <div class="info-section">
                 <h3>Power-ups</h3>
@@ -36,14 +49,16 @@
                         </div>
                     </div>
                     <div class="info-item">
-                        <div class="info-icon"><img src="images/hamburguer.png" alt="Smash Burger" class="info-image"></div>
+                        <div class="info-icon"><img src="images/hamburguer.png" alt="Smash Burger" class="info-image">
+                        </div>
                         <div class="info-details">
                             <h4>Smash Burger</h4>
                             <p>Aumenta o tamanho do chef, permitindo que ele esmague obstáculos.</p>
                         </div>
                     </div>
                     <div class="info-item">
-                        <div class="info-icon"><img src="images/mel.png" alt="Passos de Abelha" class="info-image"></div>
+                        <div class="info-icon"><img src="images/mel.png" alt="Passos de Abelha" class="info-image">
+                        </div>
                         <div class="info-details">
                             <h4>Passos de Abelha</h4>
                             <p>Reduz a velocidade dos obstáculos, mantendo a velocidade do chef inalterada.</p>
@@ -51,7 +66,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="info-section">
                 <h3>Obstáculos</h3>
                 <div class="info-items">
@@ -93,21 +108,21 @@
                 </div>
             </div>
         </div>
-        
+
         <button id="back-button">Voltar</button>
     </div>
-    
+
     <!-- Tela do Jogo -->
     <div id="game-screen" class="screen hidden">
         <canvas id="game-canvas"></canvas>
-        
+
         <!-- Interface do Jogo -->
         <div id="game-ui">
             <div id="score-container">
                 <span>Pontuação: </span>
                 <span id="score">0</span>
             </div>
-            
+
             <!-- Indicadores de Power-ups -->
             <div id="powerups-container">
                 <div id="honey" class="powerup-indicator">
@@ -119,16 +134,17 @@
                     <div class="powerup-timer"></div>
                 </div>
                 <div id="hamburguer" class="powerup-indicator">
-                    <span class="powerup-icon"><img src="images/hamburguer.png" alt="Hambúrguer" class="powerup-image"></span>
+                    <span class="powerup-icon"><img src="images/hamburguer.png" alt="Hambúrguer"
+                            class="powerup-image"></span>
                     <div class="powerup-timer"></div>
                 </div>
             </div>
-            
+
             <!-- Botão de informações durante o jogo -->
         </div>
-        
-        <div id="in-game-info-button">ℹ️</div>
-        
+
+        <div id="in-game-info-button">ℹ</div>
+
         <!-- Controles para dispositivos móveis -->
         <div id="mobile-controls">
             <div id="left-control"></div>
@@ -136,7 +152,7 @@
             <div id="right-control"></div>
         </div>
     </div>
-    
+
     <!-- Tela de Fim de Jogo -->
     <div id="game-over-screen" class="screen hidden">
         <h2>Fim de Jogo</h2>
@@ -144,12 +160,25 @@
             <p>Sua pontuação: <span id="final-score">0</span></p>
             <p>Recorde: <span id="high-score">0</span></p>
         </div>
+
         <div class="buttons-container">
             <button id="restart-button">Jogar Novamente</button>
+
             <button id="game-over-info-button">Informações do Jogo</button>
+        </div>
+        <div class="controls-info">
+            <p><strong>Cozinheiro maluco</strong> em busca da receita suprema!</p>
+
+            <div class="how-to-play">
+                <h3>Como jogar:</h3>
+                <ul>
+                    <li>⬅️ ➡️ Use as setas para se mover</li>
+                    <li>⬆️ + ➡️ Pule obstáculos com seta para cima + direita</li>
+                </ul>
+            </div>
         </div>
     </div>
     <script src="game.js"></script>
 </body>
-</html>
 
+</html>
